@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<pluggable type="plugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemas.habariproject.org/Pluggable-1.3.xsd">
+    <name>Persona</name>
+    <license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	<author url="http://colinseymour.co.uk">Colin Seymour</author>
+	<copyright>Copyright 2013</copyright>
+	<version>0.1</version>
+    <url>http://github.com/habari-extras/Persona</url>
+	<downloadurl>http://github.com/habari-extras/Persona</downloadurl>
+    <description><![CDATA[Integrate Mozilla's Persona support into Habari.]]></description>
+    <!-- <guid>4031D1D4-5409-11DE-B1F6-65BE56D89593</guid> -->
+	<help>
+		<value><![CDATA[ Coming Soon ]]></value>
+	</help>
+</pluggable>
