@@ -1,6 +1,6 @@
 (function() {
 	$('#signin').click(function(e){ navigator.id.request({siteName:persona.sitename}); });
-	$('#link-logout').click(function(e){ navigator.id.logout(); });
+	$('#link-logout').click(function(e){ navigator.id.logout(); });  // Reacts to the "logout" link in the admin menu only
 
 	navigator.id.watch({
 		loggedInUser: persona.currentUser || null,
@@ -19,41 +19,26 @@
                     document.location = persona.login_redirect;
                 },
                 error: function(xhr, status, err) {
-                    alert('Login failure: ' + err);
-                    navigator.id.logout();
+                	navigator.id.logout();
+                    alert( 'Login failure: ' + err );
+                    
                 }
             });
         },
-        onlogout: function() {
-        	// Chrome doesn't play nice here and seems to want to logout the moment
-        	// you login.  That said, we don't really need this as we're using 
+        onlogout: function() {                       
+            // I'm not sure if we really need this as we're using 
         	// Habari's session cookie so logging out from Habari normally should 
         	// be all that is needed.
-
 
             // A user has logged out! Here you need to tear down the
             // user's session by redirecting the user or making a call
             // to your backend. Also, make sure loggedInUser will get
             // set to null on the next page load.
-            // 
-            // Apparently there's a bug in Chrome so lets make sure someone is
-            // actually logged in before calling logout:
-            //if (persona.currentUser) {
-            //	return;
+
+            if (persona.currentUser) {
             	//alert('Trying to logout');
-            	//document.location = persona.logout_redirect;
-	            /*$.ajax({
-	                type: 'GET',
-	                url: 'logout', // This is a URL on your website.
-	                success: function(res, status, xhr) {
-	                	
-	                    //window.location.reload();
-	                },
-	                error: function(xhr, status, err) {
-	                    alert('Logout failure: ' + err);
-	                }
-	            });*/
-	        //}
+            	document.location = persona.logout_redirect;  
+	        }
         }
 
 	});

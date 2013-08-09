@@ -44,6 +44,7 @@ class Persona extends Plugin
 	public function action_admin_header()
 	{
 		echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge">';
+        echo self::persona_props();
 	}
 
 	/**
@@ -55,23 +56,20 @@ class Persona extends Plugin
 	public function action_admin_footer()
 	{
 		if ( Options::get( __CLASS__ . '__enable_login' ) ) {
-			echo self::persona_props();
+			//echo self::persona_props();
 			Stack::add( 'admin_footer_javascript', 'https://login.persona.org/include.js', 'persona_include' );
 			Stack::add( 'admin_footer_javascript', $this->get_url() . '/persona.js', 'persona', 'persona_props' );
 		}
 	}
-	
-	/**
-	 * Modify the login form
-	 * 
-	 * @todo Decide which of these loginform methods I need to use
-	 */
-	public function action_theme_loginform_before()
+
+    /**
+     * Forcefully remove the email address from the session cookie
+     * 
+     */
+    public function action_user_logout()
     {
-    	if ( Options::get( __CLASS__ . '__enable_login' ) ) {
-    		//Utils::debug($_SESSION);
-    	}
-	}
+        //unset($_SESSION['login']['email']);
+    }
 	
 	/**
 	 * Modify the login form
@@ -90,8 +88,6 @@ class Persona extends Plugin
 	{
 		$user = User::identify();
 		$email = ( $user->email != '' ) ? '"' . $user->email .'"' : 'null';
-		//$email = 'lildood@gmail.com';
-		//$email = 'null';
 		$login_redirect = ( isset( $_SESSION['login'] ) ? $_SESSION['login']['original'] : Site::get_url( 'admin' ) );
 		return '<script type="text/javascript">var persona = { "sitename":"'. Options::get( 'title' ) .'","currentUser":' . $email . ',"login_redirect":"'. $login_redirect .'","logout_redirect":"'. Site::get_url( 'logout' ) .'"};</script>';
 	}
@@ -159,7 +155,7 @@ class Persona extends Plugin
     	// POST to Mozilla our assertion code
     	$rr =  new RemoteRequest( 'https://verifier.login.persona.org/verify', 'POST' );
     	// TODO: This is messy.
-    	$post = Config::get( 'custom_http_port', isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : $port );
+    	$post = Config::get( 'custom_http_port', isset( $_SERVER['SERVER_PORT'] ) ? $_SERVER['SERVER_PORT'] : $port );
     	$rr->set_postdata( array(
     		'assertion' => $assertion,
     		'audience' => Site::get_url( 'host' ).':'.$post,	// Not sure if this should be the host or full path
