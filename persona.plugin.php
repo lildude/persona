@@ -2,7 +2,7 @@
 /**
  * @package Persona
  * @version 0.1
- * @author Colin Seymour - http://colinseymour.co.uk
+ * @author Colin Seymour - http://lildude.co.uk
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
@@ -18,11 +18,11 @@ class Persona extends Plugin
      */
     public function filter_plugin_config( $actions )
     {
-		$actions['configure']= _t( 'Configure', 'persona' );
-        return $actions;
+		  $actions['configure']= _t( 'Configure', 'persona' );
+      return $actions;
     }
-	
-	/**
+
+	  /**
      * Plugin UI
      *
      * @access public
@@ -30,85 +30,72 @@ class Persona extends Plugin
      */
     public function action_plugin_ui_configure()
     {
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'checkbox', 'enable_login', __CLASS__ . '__enable_login', _t( 'Enable Habari User Authentication' ) );
-			$ui->enable_login->helptext = _t('Enable this if you wish to allow Habari users to authenticate using Persona' );
-		$ui->append( 'submit', 'save', _t( 'Save', 'persona' ) );
-		$ui->set_option( 'success_message', _t( 'Options successfully saved.' ) );
-		$ui->out();
-	}
+  		$ui = new FormUI( strtolower( __CLASS__ ) );
+  		$ui->append( 'checkbox', 'enable_login', __CLASS__ . '__enable_login', _t( 'Enable Habari User Authentication' ) );
+  			$ui->enable_login->helptext = _t('Enable this if you wish to allow Habari users to authenticate using Persona' );
+  		$ui->append( 'submit', 'save', _t( 'Save', 'persona' ) );
+  		$ui->set_option( 'success_message', _t( 'Options successfully saved.' ) );
+  		$ui->out();
+  	}
 
-	/**
-	 * Suppress Compatibility Mode on IE
-	 */
-	public function action_admin_header()
-	{
-		echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge">';
-        echo self::persona_props();
-	}
+  	/**
+  	 * Suppress Compatibility Mode on IE
+  	 */
+  	public function action_admin_header()
+  	{
+  		echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge">';
+      echo self::persona_props();
+  	}
 
-	/**
-	 * Add Persona info to the admin pages
-	 *
-	 * We need this so we can successfully log out from Persona at the same time
-	 * as we log out of Habari
-	 */
-	public function action_admin_footer()
-	{
-		if ( Options::get( __CLASS__ . '__enable_login' ) ) {
-			//echo self::persona_props();
-			Stack::add( 'admin_footer_javascript', 'https://login.persona.org/include.js', 'persona_include' );
-			Stack::add( 'admin_footer_javascript', $this->get_url() . '/persona.js', 'persona', 'persona_props' );
-		}
-	}
+  	/**
+  	 * Add Persona info to the admin pages
+  	 *
+  	 * We need this so we can successfully log out from Persona at the same time
+  	 * as we log out of Habari
+  	 */
+  	public function action_admin_footer()
+  	{
+  		if ( Options::get( __CLASS__ . '__enable_login' ) ) {
+  			//echo self::persona_props();
+  			Stack::add( 'admin_footer_javascript', 'https://login.persona.org/include.js', 'persona_include' );
+  			Stack::add( 'admin_footer_javascript', $this->get_url() . '/persona.js', 'persona', 'persona_props' );
+  		}
+  	}
 
     /**
      * Forcefully remove the email address from the session cookie
-     * 
+     *
      */
     public function action_user_logout()
     {
-        //unset($_SESSION['login']['email']);
+      //unset($_SESSION['login']['email']);
     }
-	
-	/**
-	 * Modify the login form
-	 *
-	 * @todo  Change this with Habari 0.10 as it uses FormUI for the login form
-	 */
-	public function action_theme_loginform_controls()
-	{
-		if ( Options::get( __CLASS__ . '__enable_login' ) ) {
-			echo '<p><a href="#"><img id="signin" src="' . URL::get_from_filesystem( __FILE__ ) . '/img/persona_sign_in_black.png" width="185px" height="25px"/></a><br><a href="https://login.persona.org/" target="_blank" style="font-size: smaller; vertical-align: baseline;">What is Persona?</a></p>';
-			//echo '<p><a href="#" id="link_logout">logout of persona</a></p>';
-		}
-	}
-	
-	private static function persona_props()
-	{
-		$user = User::identify();
-		$email = ( $user->email != '' ) ? '"' . $user->email .'"' : 'null';
-		$login_redirect = ( isset( $_SESSION['login'] ) ? $_SESSION['login']['original'] : Site::get_url( 'admin' ) );
-		return '<script type="text/javascript">var persona = { "sitename":"'. Options::get( 'title' ) .'","currentUser":' . $email . ',"login_redirect":"'. $login_redirect .'","logout_redirect":"'. Site::get_url( 'logout' ) .'"};</script>';
-	}
 
-	/**
-	 * Modify the login form
-	 * 
-	 * @todo Decide which of these loginform methods I need to use
-	 */
-	public function action_theme_loginform_after()
-    {	
-    	/*if ( Options::get( __CLASS__ . '__enable_login' ) ) {
-			echo '<script src="https://login.persona.org/include.js"></script>';
-			echo '<script src="' . URL::get_from_filesystem( __FILE__ ) . '/persona.js"></script>';
-		}*/
-	}
+  	/**
+  	 * Modify the login form
+  	 *
+  	 * @todo  Change this with Habari 0.10 as it uses FormUI for the login form
+  	 */
+  	public function action_theme_loginform_controls()
+  	{
+  		if ( Options::get( __CLASS__ . '__enable_login' ) ) {
+  			echo '<p><a href="#"><img id="signin" src="' . URL::get_from_filesystem( __FILE__ ) . '/img/persona_sign_in_black.png" width="185px" height="25px"/></a><br><a href="https://login.persona.org/" target="_blank" style="font-size: smaller; vertical-align: baseline;">What is Persona?</a></p>';
+  			//echo '<p><a href="#" id="link_logout">logout of persona</a></p>';
+  		}
+  	}
 
-	/**
-	 * This is what we need to call to authenticate the user locally after Persona has done it's bit.
-	 */
-	public function filter_user_authenticate( $user, $username, $password )
+  	private static function persona_props()
+  	{
+  		$user = User::identify();
+  		$email = ( $user->email != '' ) ? '"' . $user->email .'"' : 'null';
+  		$login_redirect = ( isset( $_SESSION['login'] ) ? $_SESSION['login']['original'] : Site::get_url( 'admin' ) );
+  		return '<script type="text/javascript">var persona = { "sitename":"'. Options::get( 'title' ) .'","currentUser":' . $email . ',"login_redirect":"'. $login_redirect .'","logout_redirect":"'. Site::get_url( 'logout' ) .'"};</script>';
+  	}
+
+  	/**
+  	 * This is what we need to call to authenticate the user locally after Persona has done it's bit.
+  	 */
+	  public function filter_user_authenticate( $user, $username, $password )
     {
     	if ( isset( $username ) && $username == 'PersonaID' ) {
     		//EventLog::log( 'Persona Login attempt' );
